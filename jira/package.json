@@ -1,6 +1,6 @@
 {
     "name": "jira-streamdeck",
-    "version": "0.3.6",
+    "version": "0.3.7",
     "description": "A Stream Deck plugin for viewing and starting assigned Jira Cloud tickets.",
     "private": true,
     "license": "MIT",
@@ -25,7 +25,7 @@
         "plugin:validate": "streamdeck validate com.samir.jira-tickets.sdPlugin --no-update-check",
         "create": "npm run validate && npm run plugin:validate && streamdeck pack com.samir.jira-tickets.sdPlugin --output . --force --no-update-check --no-file-list",
         "validate": "npm run build && npm test",
-        "release:local": "npm run version:update && npm run create"
+        "release:local": "npm run version:update && npm run create && open com.samir.jira-tickets.streamDeckPlugin"
     },
     "dependencies": {
         "@elgato/streamdeck": "^3.0.4"

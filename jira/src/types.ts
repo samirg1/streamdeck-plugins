@@ -18,6 +18,6 @@ export type JiraIssue = {
 };
 
 export const DEFAULT_JQL =
-  'assignee = currentUser() AND status NOT IN ("Done", "Ready for Review", "Blocked") ORDER BY updated DESC';
+  'assignee = currentUser() AND sprint in openSprints() AND status NOT IN ("Done", "Ready for Review", "Blocked", "No Fix Required") ORDER BY updated DESC';
 
 export const DEFAULT_REFRESH_SECONDS = 60;

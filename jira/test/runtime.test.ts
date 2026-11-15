@@ -48,7 +48,7 @@ test("built plugin registers with a Stream Deck websocket and stays alive", asyn
             },
         ],
         devicePixelRatio: 2,
-        plugin: { uuid: "com.samir.jira-tickets", version: "0.3.6.0" },
+        plugin: { uuid: "com.samir.jira-tickets", version: "0.3.7.0" },
     });
     child = spawn(
         process.execPath,
