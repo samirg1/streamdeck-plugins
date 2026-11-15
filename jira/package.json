@@ -20,7 +20,7 @@
     "scripts": {
         "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --format=cjs --target=node20 --sourcemap --outfile=com.samir.jira-tickets.sdPlugin/bin/index.js",
         "watch": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node20 --sourcemap --outfile=com.samir.jira-tickets.sdPlugin/bin/index.js --watch",
-        "test": "node --import tsx --test test/**/*.test.ts",
+        "test": "node --import tsx --test test/*.test.ts",
         "version:update": "node ../scripts/update-version.mjs jira",
         "plugin:validate": "streamdeck validate com.samir.jira-tickets.sdPlugin --no-update-check",
         "create": "npm run validate && npm run plugin:validate && streamdeck pack com.samir.jira-tickets.sdPlugin --output . --force --no-update-check --no-file-list",
