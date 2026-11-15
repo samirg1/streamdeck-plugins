@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Jira Tickets Settings</title>
+  <style>
+    :root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; padding: 14px; color: #eee; background: #2d2d2d; font-size: 13px; }
+    label { display: block; margin: 0 0 13px; font-weight: 600; }
+    input, textarea { box-sizing: border-box; width: 100%; margin-top: 5px; padding: 8px; color: #fff; background: #1d1d1d; border: 1px solid #666; border-radius: 4px; font: inherit; }
+    .toggle { display: flex; align-items: center; gap: 8px; padding: 9px; background: #1d1d1d; border: 1px solid #666; border-radius: 4px; }
+    .toggle input { width: auto; margin: 0; }
+    textarea { min-height: 82px; resize: vertical; }
+    button { width: 100%; padding: 9px; color: #fff; background: #0c66e4; border: 0; border-radius: 4px; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .55; }
+    .hint { margin: 6px 0 14px; color: #bbb; line-height: 1.4; }
+    #status { min-height: 18px; margin-top: 9px; color: #9fdfb0; text-align: center; }
+  </style>
+</head>
+<body>
+  <label class="toggle">
+    <input id="demoMode" type="checkbox" checked>
+    Use demo tickets (no Jira access required)
+  </label>
+  <p class="hint">Demo mode fills all six keys with sample tickets. Turn it off when you are ready to connect Jira.</p>
+  <label>Jira site
+    <input id="baseUrl" type="url" placeholder="https://your-company.atlassian.net" autocomplete="url">
+  </label>
+  <p class="hint">For security, only HTTPS Jira Cloud addresses ending in <strong>.atlassian.net</strong> are accepted.</p>
+  <label>Atlassian account email
+    <input id="email" type="email" placeholder="you@example.com" autocomplete="username">
+  </label>
+  <label>API token
+    <input id="apiToken" type="password" placeholder="Atlassian API token" autocomplete="current-password">
+  </label>
+  <p class="hint">The token is stored in Stream Deck's plugin settings and is only sent over HTTPS to the configured Jira Cloud site.</p>
+  <label>JQL
+    <textarea id="jql">assignee = currentUser() AND status NOT IN ("Done", "Ready for Review", "Blocked") ORDER BY updated DESC</textarea>
+  </label>
+  <label>Refresh every (seconds)
+    <input id="refreshSeconds" type="number" min="15" step="1" value="60">
+  </label>
+  <button id="save" type="button" disabled>Save &amp; refresh</button>
+  <div id="status" role="status"></div>
+
+  <script>
+    let websocket;
+    let pluginUUID;
+    const ids = ["baseUrl", "email", "apiToken", "jql", "refreshSeconds"];
+    const byId = (id) => document.getElementById(id);
+
+    window.connectElgatoStreamDeckSocket = (port, uuid, registerEvent) => {
+      pluginUUID = uuid;
+      websocket = new WebSocket(`ws://127.0.0.1:${port}`);
+      websocket.onopen = () => {
+        websocket.send(JSON.stringify({ event: registerEvent, uuid }));
+        websocket.send(JSON.stringify({ event: "getGlobalSettings", context: uuid }));
+        byId("save").disabled = false;
+      };
+      websocket.onmessage = ({ data }) => {
+        const message = JSON.parse(data);
+        if (message.event !== "didReceiveGlobalSettings") return;
+        const settings = message.payload?.settings || {};
+        ids.forEach((id) => {
+          if (settings[id] !== undefined) byId(id).value = settings[id];
+        });
+        byId("demoMode").checked = settings.demoMode !== false;
+      };
+    };
+
+    byId("save").addEventListener("click", () => {
+      const settings = Object.fromEntries(ids.map((id) => [id, byId(id).value]));
+      settings.demoMode = byId("demoMode").checked;
+      settings.refreshSeconds = Math.max(15, Number(settings.refreshSeconds) || 60);
+      websocket.send(JSON.stringify({ event: "setGlobalSettings", context: pluginUUID, payload: settings }));
+      byId("status").textContent = "Saved. Tickets are refreshing…";
+      setTimeout(() => { byId("status").textContent = ""; }, 2500);
+    });
+  </script>
+</body>
+</html>

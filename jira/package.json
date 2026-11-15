@@ -1,0 +1,44 @@
+{
+    "name": "jira-streamdeck",
+    "version": "0.3.6",
+    "description": "A Stream Deck plugin for viewing and starting assigned Jira Cloud tickets.",
+    "private": true,
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/samirg1/streamdeck-plugins.git",
+        "directory": "jira"
+    },
+    "homepage": "https://github.com/samirg1/streamdeck-plugins/tree/main/jira",
+    "bugs": {
+        "url": "https://github.com/samirg1/streamdeck-plugins/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "type": "module",
+    "scripts": {
+        "build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --format=cjs --target=node20 --sourcemap --outfile=com.samir.jira-tickets.sdPlugin/bin/index.js",
+        "watch": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node20 --sourcemap --outfile=com.samir.jira-tickets.sdPlugin/bin/index.js --watch",
+        "test": "node --import tsx --test test/**/*.test.ts",
+        "version:update": "node ../scripts/update-version.mjs jira",
+        "plugin:validate": "streamdeck validate com.samir.jira-tickets.sdPlugin --no-update-check",
+        "create": "npm run validate && npm run plugin:validate && streamdeck pack com.samir.jira-tickets.sdPlugin --output . --force --no-update-check --no-file-list",
+        "validate": "npm run build && npm test",
+        "release:local": "npm run version:update && npm run create"
+    },
+    "dependencies": {
+        "@elgato/streamdeck": "^3.0.4"
+    },
+    "devDependencies": {
+        "@elgato/cli": "^1.10.4",
+        "@types/node": "^24.19.2",
+        "@types/ws": "^8.18.2",
+        "esbuild": "^0.28.2",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3"
+    },
+    "overrides": {
+        "zod": "4.6.7"
+    }
+}
