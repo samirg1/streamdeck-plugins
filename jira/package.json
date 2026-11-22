@@ -28,7 +28,7 @@
         "release:local": "npm run version:update && npm run create && open com.samir.jira-tickets.streamDeckPlugin"
     },
     "dependencies": {
-        "@elgato/streamdeck": "^3.0.4"
+        "@elgato/streamdeck": "^3.0.5"
     },
     "devDependencies": {
         "@elgato/cli": "^1.10.4",
